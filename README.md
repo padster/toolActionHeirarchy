@@ -57,7 +57,7 @@ The notebook demonstrates that:
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.12+
 - Jupyter Notebook
 - See `requirements.txt` for full dependency list
 
