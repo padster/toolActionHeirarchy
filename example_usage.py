@@ -33,6 +33,8 @@ class ToolHierarchy:
             embedding_model_name: Name of the sentence transformer model to use
         """
         self.tools = tools
+        # Create efficient tool lookup dictionary
+        self.tools_by_id = {tool['id']: tool for tool in tools}
         self.embedding_model_name = embedding_model_name
         
         if PACKAGES_AVAILABLE:
@@ -89,6 +91,10 @@ class ToolHierarchy:
             print("Error: Required packages not installed")
             return None, 0.0, None
         
+        # Validate hierarchy type
+        if hierarchy_type not in ['domain', 'action']:
+            raise ValueError(f"Invalid hierarchy_type '{hierarchy_type}'. Must be 'domain' or 'action'.")
+        
         hierarchy = self.domain_hierarchy if hierarchy_type == 'domain' else self.action_hierarchy
         
         # Stage 1: Find best category
@@ -112,11 +118,8 @@ class ToolHierarchy:
         return category_tools[best_tool_idx]['id'], float(tool_similarities[best_tool_idx]), best_category
     
     def get_tool_info(self, tool_id: str) -> Dict:
-        """Get information about a specific tool."""
-        for tool in self.tools:
-            if tool['id'] == tool_id:
-                return tool
-        return None
+        """Get information about a specific tool using O(1) lookup."""
+        return self.tools_by_id.get(tool_id)
 
 
 def example_usage():
